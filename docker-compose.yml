@@ -12,4 +12,4 @@ services:
     network_mode: "host"
     restart: unless-stopped
     ports:
-      - "9300:9300"
+      - "9400:9400"
