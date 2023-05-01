@@ -145,7 +145,7 @@ def query_handler(call):
         )
         return 0
     _, idx = call.data.split('_')
-    with open(faq_path, 'r', encoding="windows-1251") as stream:
+    with open(faq_path, 'r', encoding="utf-8") as stream:
         faq = yaml.safe_load(stream)
 
     for dict_elem in faq['questions']:
@@ -175,7 +175,7 @@ def query_handler(call):
         )
         return 0
     _, idx = call.data.split('_')
-    with open(faq_path, 'r', encoding="windows-1251") as stream:
+    with open(faq_path, 'r', encoding="utf-8") as stream:
         faq = yaml.safe_load(stream)
 
     for dict_elem in faq['questions']:
@@ -193,7 +193,7 @@ def query_handler(call):
 
 def extend_answer(message, idx):
     faq_extend_answer(faq_path, message.text, f"@{message.chat.username}", idx)
-    with open(faq_path, 'r', encoding="windows-1251") as stream:
+    with open(faq_path, 'r', encoding="utf-8") as stream:
         faq = yaml.safe_load(stream)
 
     for dict_elem in faq['questions']:

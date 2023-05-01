@@ -25,7 +25,7 @@ def classify_question(text, faq_path):
     text = ' '.join(morph.parse(word)[0].normal_form for word in text.split())
     # with open(faq_path, encoding="utf-8") as json_file:
     #     faq = json.load(json_file)
-    with open(faq_path, 'r', encoding="windows-1251") as stream:
+    with open(faq_path, 'r', encoding="utf-8") as stream:
         faq = yaml.safe_load(stream)
     existed_answers = []
     answer_idx = []
