@@ -1,0 +1,15 @@
+questions:
+- answers:
+  question: "question"
+  - answer: "answer"
+    author: '@Username'
+  - answer: "answer2"
+    author: '@Username'
+  idx: '0'
+- answers:
+  question: "Как добавить информацию в FAQ?"
+  - answer: "Отправьте боту команду \"/add\" и следуйте указаниям"
+  author: '@Username'
+  idx: '1'
+
+
