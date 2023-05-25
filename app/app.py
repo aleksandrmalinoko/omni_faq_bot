@@ -19,10 +19,10 @@ config = vars(args)
 
 devmode = config['devmode']
 if devmode:
-    logging.basicConfig(filename="C:\\Users\\amalinko\\PycharmProjects\\omni_faq_bot\\logs\\omni_faq_bot.log",
+    logging.basicConfig(filename="C:\\Users\\amalinko\\PycharmProjects\\chika_faq_bot\\logs\\chika_faq_bot.log",
                         level=logging.INFO)
 else:
-    logging.basicConfig(filename="/omni_faq_bot/logs/omni_faq_bot.log", level=logging.INFO)
+    logging.basicConfig(filename="/chika_faq_bot/logs/chika_faq_bot.log", level=logging.INFO)
 using_bot_counter = prometheus_client.Counter(
     "using_bot_count",
     "request to the bot",
@@ -31,22 +31,22 @@ using_bot_counter = prometheus_client.Counter(
 
 parser = ConfigParser()
 if devmode:
-    parser.read(Path('C:\\Users\\amalinko\\PycharmProjects\\omni_faq_bot\\config\\init.ini').absolute())
+    parser.read(Path('C:\\Users\\amalinko\\PycharmProjects\\chika_faq_bot\\config\\init.ini').absolute())
 else:
-    parser.read(Path('/omni_faq_bot/config/init.ini').absolute())
+    parser.read(Path('/chika_faq_bot/config/init.ini').absolute())
 telegram_api_token = parser['telegram']['telegram_api_token']
 bot = telebot.TeleBot(token=telegram_api_token)
 
 if devmode:
-    faq_path: Path = Path(f"C:\\Users\\amalinko\\PycharmProjects\\omni_faq_bot\\config\\faq.yaml").absolute()
+    faq_path: Path = Path(f"C:\\Users\\amalinko\\PycharmProjects\\chika_faq_bot\\config\\faq.yaml").absolute()
 else:
-    faq_path: Path = Path(f"/omni_faq_bot/config/faq.yaml").absolute()
+    faq_path: Path = Path(f"/chika_faq_bot/config/faq.yaml").absolute()
 
 
 if devmode:
-    role_model_path: Path = Path(f"C:\\Users\\amalinko\\PycharmProjects\\omni_faq_bot\\config\\role_model.txt").absolute()
+    role_model_path: Path = Path(f"C:\\Users\\amalinko\\PycharmProjects\\chika_faq_bot\\config\\role_model.txt").absolute()
 else:
-    role_model_path: Path = Path(f"/omni_faq_bot/config/role_model.txt").absolute()
+    role_model_path: Path = Path(f"/chika_faq_bot/config/role_model.txt").absolute()
 
 access_denied_message = "Для использоавания бота Вы должны быть в таблице \"Сотрудники стрима\" на странице \"Общие контакты\""
 
