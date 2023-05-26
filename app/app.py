@@ -123,6 +123,28 @@ def content_message(message, question):
     )
 
 
+@bot.message_handler(commands=['all'])
+def add_question_message(message):
+    bot_logging(message)
+    bot_monitoring(message)
+    if not check_access_rights(role_model_file=role_model_path, username=f"@{message.chat.username}"):
+        bot.send_message(
+            message.chat.id,
+            access_denied_message
+        )
+        return 0
+    result_answer = ""
+    with open(faq_path, 'r', encoding="utf-8") as stream:
+        faq = yaml.safe_load(stream)
+    for dict_elem in faq['questions']:
+        result_answer += f"\n{dict_elem['question']}"
+    bot.send_message(
+        message.chat.id,
+        f"Все существующие записи:\n{result_answer}",
+    )
+    bot.register_next_step_handler(message, header_message)
+
+
 @bot.message_handler(content_types='text')
 def question_message(message):
     bot_logging(message)
