@@ -1,6 +1,6 @@
 FROM python:3.10-buster as builder
 
-WORKDIR /chika_faq_bot
+WORKDIR /omni_faq_bot
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -15,7 +15,7 @@ FROM python:3.10-slim-buster
 
 COPY --from=builder /opt/venv /opt/venv
 
-WORKDIR /chika_faq_bot
+WORKDIR /omni_faq_bot
 
 ENV PATH="/opt/venv/bin:$PATH"
 
