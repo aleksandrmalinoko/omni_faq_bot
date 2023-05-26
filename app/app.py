@@ -13,13 +13,18 @@ from faq_methods import faq_add_new_question, faq_extend_answer
 parser = argparse.ArgumentParser(description="You can run this script locally, using flag --devmode or -d",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("-d", "--devmode", action="store_true", help="Developer mode")
+parser.add_argument("-m", "--macmode", action="store_true", help="Developer mode macos")
 args = parser.parse_args()
 config = vars(args)
 
 
 devmode = config['devmode']
+macmode = config['macmode']
 if devmode:
     logging.basicConfig(filename="C:\\Users\\amalinko\\PycharmProjects\\omni_faq_bot\\logs\\omni_faq_bot.log",
+                        level=logging.INFO)
+elif macmode:
+    logging.basicConfig(filename="/Users/aleksandrmalinko/PycharmProjects/omni_faq_bot/logs/omni_faq_bot.log",
                         level=logging.INFO)
 else:
     logging.basicConfig(filename="/omni_faq_bot/logs/omni_faq_bot.log", level=logging.INFO)
@@ -32,6 +37,8 @@ using_bot_counter = prometheus_client.Counter(
 parser = ConfigParser()
 if devmode:
     parser.read(Path('C:\\Users\\amalinko\\PycharmProjects\\omni_faq_bot\\config\\init.ini').absolute())
+elif macmode:
+    parser.read(Path('/Users/aleksandrmalinko/PycharmProjects/omni_faq_bot/config/init.ini').absolute())
 else:
     parser.read(Path('/omni_faq_bot/config/init.ini').absolute())
 telegram_api_token = parser['telegram']['telegram_api_token']
@@ -39,12 +46,16 @@ bot = telebot.TeleBot(token=telegram_api_token)
 
 if devmode:
     faq_path: Path = Path(f"C:\\Users\\amalinko\\PycharmProjects\\omni_faq_bot\\config\\faq.yaml").absolute()
+elif macmode:
+    faq_path: Path = Path(f"/Users/aleksandrmalinko/PycharmProjects/omni_faq_bot/config/faq.yaml").absolute()
 else:
     faq_path: Path = Path(f"/omni_faq_bot/config/faq.yaml").absolute()
 
 
 if devmode:
     role_model_path: Path = Path(f"C:\\Users\\amalinko\\PycharmProjects\\omni_faq_bot\\config\\role_model.txt").absolute()
+elif macmode:
+    role_model_path: Path = Path(f"/Users/aleksandrmalinko/PycharmProjects/omni_faq_bot/config/role_model.txt").absolute()
 else:
     role_model_path: Path = Path(f"/omni_faq_bot/config/role_model.txt").absolute()
 
