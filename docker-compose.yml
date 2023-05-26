@@ -4,11 +4,11 @@ services:
     build: .
     volumes:
       - type: bind
-        source: /home/ubuntu/bots_config/omni-faq-bot/config
-        target: /omni_faq_bot/config
+        source: /home/ubuntu/bots_config/chika-faq-bot/config
+        target: /chika_faq_bot/config
       - type: bind
-        source: /var/log/omni-faq-bot
-        target: /omni_faq_bot/logs
+        source: /var/log/chika-faq-bot
+        target: /chika_faq_bot/logs
     network_mode: "host"
     restart: unless-stopped
     ports:
