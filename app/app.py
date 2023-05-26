@@ -142,7 +142,6 @@ def add_question_message(message):
         message.chat.id,
         f"Все существующие записи:\n{result_answer}",
     )
-    bot.register_next_step_handler(message, header_message)
 
 
 @bot.message_handler(content_types='text')
