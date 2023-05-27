@@ -15,7 +15,6 @@ def classify_question(text, faq_path):
         existed_answers.append(existed_answer)
 
     scores = process.extract(text, existed_answers, limit=3)
-    print(scores)
     result_answer = []
     for idx in scores:
         for dict_elem in faq['questions']:

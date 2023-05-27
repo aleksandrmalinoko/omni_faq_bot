@@ -8,7 +8,9 @@ import argparse
 from classify import classify_question
 from keyboards import TelegramInlineKeyboard
 import yaml
-from faq_methods import faq_add_new_question, faq_extend_answer
+from faq_methods import faq_add_new_question, faq_extend_answer, faq_edit_answer, faq_delete_answer
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+
 
 parser = argparse.ArgumentParser(description="You can run this script locally, using flag --devmode or -d",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -183,18 +185,39 @@ def query_handler(call):
     for dict_elem in faq['questions']:
         if dict_elem['idx'] == idx:
             call_answer = f"{dict_elem['question']}\n\n"
+            bot.send_message(
+                text=call_answer,
+                chat_id=call.message.chat.id
+            )
             for answer in dict_elem['answers']:
-                call_answer += f"{answer['answer']}\n{answer['author']}\n\n"
+                call_answer = f"{answer['answer']}\n{answer['author']}\n\n"
+                if f"@{call.from_user.username}" == answer['author']:
+                    keyboard = TelegramInlineKeyboard()
+                    keyboard.add_button("Редактировать", f"edit_{idx}")
+                    keyboard.add_button("Удалить", f"delete_{idx}")
+                    bot.send_message(
+                        text=call_answer,
+                        chat_id=call.message.chat.id,
+                        reply_markup=keyboard.get_keyboard()
+                    )
+                else:
+                    bot.send_message(
+                        text=call_answer,
+                        chat_id=call.message.chat.id
+                    )
+            keyboard = TelegramInlineKeyboard()
+            keyboard.add_button("Добавить ответ", f"extend_{idx}")
+            bot.send_message(
+                text="Чтобы добавить новый вариант ответа, нажмите кнопку ниже",
+                chat_id=call.message.chat.id,
+                reply_markup=keyboard.get_keyboard()
+            )
             break
     else:
-        call_answer = "Error"
-    keyboard = TelegramInlineKeyboard()
-    keyboard.add_button("Добавить ответ", f"extend_{idx}")
-    bot.send_message(
-        text=call_answer,
-        chat_id=call.message.chat.id,
-        reply_markup=keyboard.get_keyboard()
-    )
+        bot.send_message(
+            text="Произошла ошибка",
+            chat_id=call.message.chat.id
+        )
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('extend'))
@@ -247,6 +270,89 @@ def extend_answer(message, idx):
             text="Произошла ошибка",
             chat_id=message.chat.id
         )
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('edit'))
+def query_handler(call):
+    bot.answer_callback_query(callback_query_id=call.id)
+    if not check_access_rights(role_model_file=role_model_path, username=f"@{call.message.chat.username}"):
+        bot.send_message(
+            call.message.chat.id,
+            access_denied_message
+        )
+        return 0
+    _, idx = call.data.split('_')
+    existed_answer = call.message.text
+    bot.send_message(
+        text=f"Отправьте отредактированную версию ответа",
+        chat_id=call.message.chat.id,
+    )
+    bot.register_next_step_handler(call.message, edit_answer, idx=idx, existed_answer=existed_answer)
+
+
+def edit_answer(message, idx, existed_answer):
+    faq_edit_answer(faq_path, message.text, existed_answer, idx)
+    with open(faq_path, 'r', encoding="utf-8") as stream:
+        faq = yaml.safe_load(stream)
+
+    for dict_elem in faq['questions']:
+        if dict_elem['idx'] == idx:
+            call_answer = f"{dict_elem['question']}\n\n"
+            for answer in dict_elem['answers']:
+                call_answer += f"{answer['answer']}\n{answer['author']}\n\n"
+            break
+    else:
+        call_answer = "Error"
+    if call_answer != "Error":
+        call_answer = f"Обновлено:\n{call_answer}"
+        bot.send_message(
+            text=call_answer,
+            chat_id=message.chat.id
+        )
+    else:
+        bot.send_message(
+            text="Произошла ошибка",
+            chat_id=message.chat.id
+        )
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('delete'))
+def query_handler(call):
+    bot.answer_callback_query(callback_query_id=call.id)
+    if not check_access_rights(role_model_file=role_model_path, username=f"@{call.message.chat.username}"):
+        bot.send_message(
+            call.message.chat.id,
+            access_denied_message
+        )
+        return 0
+    _, idx = call.data.split('_')
+    existed_answer = call.message.text
+    keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True, one_time_keyboard=True)
+    button = KeyboardButton(text="Да")
+    keyboard.add(button)
+    button = KeyboardButton(text="Отмена")
+    keyboard.add(button)
+    bot.send_message(
+        text=f"Вы уверены, что хотите удалить ответ?",
+        chat_id=call.message.chat.id,
+        reply_markup=keyboard
+    )
+    bot.register_next_step_handler(call.message, delete_answer, idx=idx, existed_answer=existed_answer)
+
+
+def delete_answer(message, idx, existed_answer):
+    if message.text != "Да":
+        bot.send_message(
+            text="Отменено",
+            chat_id=message.chat.id
+        )
+        return
+    faq_delete_answer(faq_path, existed_answer, idx)
+
+    bot.send_message(
+        text="Удалено",
+        chat_id=message.chat.id
+    )
 
 
 if __name__ == '__main__':
